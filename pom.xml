@@ -19,13 +19,13 @@
         <dependency>
             <groupId>com.rabbitmq</groupId>
             <artifactId>amqp-client</artifactId>
-            <version>4.8.0</version>
+            <version>5.7.3</version>
         </dependency>
         <!-- RabbitMQ JMS Client -->
         <dependency>
             <groupId>com.rabbitmq.jms</groupId>
             <artifactId>rabbitmq-jms</artifactId>
-            <version>1.6.0</version>
+            <version>1.14.0</version>
         </dependency>
         <dependency>
             <groupId>com.sun.messaging.mq</groupId>

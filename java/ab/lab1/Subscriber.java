@@ -27,13 +27,12 @@ public class Subscriber {
      * @param routingKeys subscriber's routing(binding) keys
      * @param destination place where received file should be saved
      */
-    public Subscriber(String id, String[] routingKeys, File destination) throws IOException, TimeoutException {
+    public Subscriber(Connection connection, String id, String[] routingKeys, File destination) throws IOException, TimeoutException {
         this.id = id;
         this.routingKeys = routingKeys;
         this.destination = destination;
         ConnectionFactory connectionFactory = new ConnectionFactory();
         connectionFactory.setHost("localhost");
-        Connection connection = connectionFactory.newConnection();
         channel = connection.createChannel();
     }
 
@@ -50,7 +49,7 @@ public class Subscriber {
      */
     public void subscribe() throws IOException {
         channel.exchangeDeclare(EXCHANGE_NAME, "direct");
-        String qName = "hello-queue-"+id;
+        String qName = "hello-queue-" + id;
         channel.queueDeclare(qName, false, true, true, Collections.EMPTY_MAP);
         for (String routingKey : routingKeys) {
             channel.queueBind(qName, EXCHANGE_NAME, routingKey);

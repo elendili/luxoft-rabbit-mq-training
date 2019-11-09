@@ -1,28 +1,35 @@
 package ab.lab1;
 
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 public class Starter {
     public static void main(String[] args) throws IOException, TimeoutException, InterruptedException {
+        ConnectionFactory connectionFactory = new ConnectionFactory();
+        connectionFactory.setHost("localhost");
+        Connection connection = connectionFactory.newConnection();
+
         System.out.println("=======================");
         String[] catKeys = {"cat"};
         File catFolder = new File("resources/lab1/cat");
-        Subscriber catSubscriber = new Subscriber("CatSubscriber", catKeys, catFolder);
+        Subscriber catSubscriber = new Subscriber(connection,"CatSubscriber", catKeys, catFolder);
         catSubscriber.subscribe();
 
         String[] dogKeys = {"dog"};
         File dogFolder = new File("resources/lab1/dog");
-        Subscriber dogSubscriber = new Subscriber("DogSubscriber", dogKeys, dogFolder);
+        Subscriber dogSubscriber = new Subscriber(connection,"DogSubscriber", dogKeys, dogFolder);
         dogSubscriber.subscribe();
 
         String[] funKeys = {"panda", "raccoon"};
         File funFolder = new File("resources/lab1/fun");
-        Subscriber funSubscriber = new Subscriber("FunSubscriber", funKeys, funFolder);
+        Subscriber funSubscriber = new Subscriber(connection,"FunSubscriber", funKeys, funFolder);
         funSubscriber.subscribe();
 
-        Publisher publisher = new Publisher();
+        Publisher publisher = new Publisher(connection);
         File source = new File("resources/lab1/source");
         File[] files = source.listFiles();
         if (files != null) {
@@ -39,6 +46,6 @@ public class Starter {
             }
         }
         System.out.println("Hi");
-        publisher.close();
+        connection.close();
     }
 }

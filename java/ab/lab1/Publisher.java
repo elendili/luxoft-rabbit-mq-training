@@ -14,7 +14,6 @@ import java.util.concurrent.TimeoutException;
 
 public class Publisher {
     private static final String EXCHANGE_NAME = "lab.image";
-    private Connection connection;
     private Channel channel;
 
     /**
@@ -23,10 +22,7 @@ public class Publisher {
      * Implement it.
      * Use "localhost" as a host for ConnectionFactory.
      */
-    public Publisher() throws IOException, TimeoutException {
-        ConnectionFactory connectionFactory = new ConnectionFactory();
-        connectionFactory.setHost("localhost");
-        connection = connectionFactory.newConnection();
+    public Publisher(Connection connection) throws IOException, TimeoutException {
         channel = connection.createChannel();
     }
 
@@ -49,14 +45,6 @@ public class Publisher {
         AMQP.BasicProperties properties = createProperties(file);
         channel.basicPublish(EXCHANGE_NAME, routingKey, properties, bytes);
         System.out.println("File '" + file.getName() + "' is sent.");
-    }
-
-    /**
-     * Closes the channel and the connection.
-     */
-    public void close() throws IOException, TimeoutException {
-        channel.close();
-        connection.close();
     }
 
     /**
