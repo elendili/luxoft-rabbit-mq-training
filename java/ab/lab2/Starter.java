@@ -36,7 +36,6 @@ public class Starter {
         publisher.send(new Person("Spain", "Tom", 1989), "Spain.Tom.1989");
         publisher.send(new Person("Ukraine", "John", 1988), "Ukraine.John.1988");
 
-        Thread.sleep(1000);
         c.close();
         System.out.println("z");
     }

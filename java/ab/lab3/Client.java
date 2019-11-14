@@ -35,41 +35,23 @@ public class Client {
      * 6. Starts consuming messages from the callback queue. Blocks until the answer is received.
      * 7. Returns evaluated factorial value.
      * Implement it.
-     *
-     * @param number number to evaluate factorial of
-     * @return evaluated factorial value
      */
 //    final static BlockingQueue<Integer> response = new ArrayBlockingQueue<>(10);
-    static class BQ{
-        BQ(String name){
-            this.name = name;
-        }
-        final String name;
-        final ArrayBlockingQueue<Integer> abq = new ArrayBlockingQueue<>(10);
 
-        @Override
-        public String toString() {
-            return "BQ{" +
-                    "name='" + name + '\'' +
-                    ", abq=" + abq +
-                    '}';
-        }
-    }
-    BiFunction<Channel,BQ,DefaultConsumer> sd = (c, bq)-> new DefaultConsumer(c) {
-        @Override
-        public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
-            bq.abq.offer(Integer.parseInt(new String(body)));
-            System.out.println(bq);
-        }
-    };
     public Integer call(int number) throws IOException, InterruptedException {
-//        String qName = "q";
-        String qName = "q"+number;
+        String qName = "q-";
+//        String qName = "q"+number+"q";
         channel.queueDeclare(qName, false, false, false, null);
         AMQP.BasicProperties props = new AMQP.BasicProperties.Builder().replyTo(qName).build();
         channel.basicPublish("", REQUEST_QUEUE_NAME, props, (number + "").getBytes());
         final BQ bq1 = new BQ("bq:"+qName+number);
-        DefaultConsumer callback = sd.apply(channel,bq1);
+        DefaultConsumer callback = new DefaultConsumer(channel) {
+            @Override
+            public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
+                bq1.abq.offer(Integer.parseInt(new String(body)));
+                System.out.println(bq1);
+            }
+        };
         channel.basicConsume(qName, true, callback);
         System.out.println(bq1);
         Integer x = bq1.abq.take();
